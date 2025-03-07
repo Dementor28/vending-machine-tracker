@@ -21,16 +21,17 @@ function App() {
 
   const handleDelete = (id) => {
     axios.delete(`http://localhost:5000/api/products/${id}`)
-      .then(() => setProducts(products.filter((product) => product.id !== id)))
+      .then(() => setProducts(products.filter((product) => product._id !== id)))
       .catch(error => console.error('Error deleting product:', error));
   };
 
   const handleBuyProduct = (id) => {
+    console.log("Buying product with ID:", id); // Debugging line
     // Update sales and stock for the product
-    axios.patch(`http://localhost:5000/api/products/${id}`, { sales: 1, stock: -1 })
+    axios.patch(`http://localhost:5000/api/products/${id}`, {})
       .then(response => {
         setProducts(products.map(product => 
-          product.id === id ? response.data : product
+          product._id === id ? response.data : product
         ));
       })
       .catch(error => console.error('Error buying product:', error));
@@ -43,7 +44,7 @@ function App() {
       <div className="row mt-4">
         {products.map((product) => (
           <ProductCard
-            key={product.id}
+            key={product._id}
             product={product}
             onDelete={handleDelete}
             onBuy={handleBuyProduct}
