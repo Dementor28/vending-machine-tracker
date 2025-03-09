@@ -1,4 +1,26 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
+import styled from "styled-components";
+
+const ModalOverlay = styled.div`
+    position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background-color: ${(props) => props.theme.background};
+  color: ${(props) => props.theme.color};
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
 
 function UpdateProductForm({ product, onUpdate, onClose }) {
   const [price, setPrice] = useState(product.price);
@@ -7,16 +29,16 @@ function UpdateProductForm({ product, onUpdate, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedData = {
-        price: parseFloat(price), // Ensure price is a number
-        stock: parseInt(stock, 10),
-      };
+      price: parseFloat(price), // Ensure price is a number
+      stock: parseInt(stock, 10),
+    };
     onUpdate(product._id, updatedData);
     onClose(); // Close modal after update
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <ModalOverlay>
+      <ModalContent>
         <h3>Update Product</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -44,8 +66,8 @@ function UpdateProductForm({ product, onUpdate, onClose }) {
             Cancel
           </button>
         </form>
-      </div>
-    </div>
+      </ModalContent>
+    </ModalOverlay>
   );
 }
 
