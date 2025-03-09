@@ -5,6 +5,13 @@ import axios from 'axios';
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [alert, setAlert] = useState(null);
+
+    // Function to show an alert message
+    const showAlert = (message, duration = 2000) => {
+      setAlert(message);
+      setTimeout(() => setAlert(null), duration); // Auto-hide alert after duration
+    };
 
   useEffect(() => {
     // Fetch products from the backend
@@ -14,15 +21,23 @@ function App() {
   }, []);
 
   const handleAddProduct = (newProduct) => {
-    axios.post('http://localhost:5000/api/products', newProduct)
-      .then(response => setProducts([...products, response.data]))
-      .catch(error => console.error('Error adding product:', error));
+    axios.post("http://localhost:5000/api/products", newProduct)
+      .then(response => {
+        setProducts([...products, response.data]);
+        showAlert("Product added successfully!", 2000);
+      })
+      .catch(error => console.error("Error adding product:", error));
   };
 
   const handleDelete = (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+
     axios.delete(`http://localhost:5000/api/products/${id}`)
-      .then(() => setProducts(products.filter((product) => product._id !== id)))
-      .catch(error => console.error('Error deleting product:', error));
+      .then(() => {
+        setProducts(products.filter(product => product._id !== id));
+        showAlert("Product deleted successfully!", 2000);
+      })
+      .catch(error => console.error("Error deleting product:", error));
   };
 
   const handleBuyProduct = (id) => {
@@ -33,6 +48,7 @@ function App() {
         setProducts(products.map(product => 
           product._id === id ? response.data : product
         ));
+        showAlert("Purchase successful!", 900); // Quick 0.5s pop-up
       })
       .catch(error => console.error('Error buying product:', error));
   };
@@ -52,6 +68,7 @@ function App() {
         setProducts(products.map((product) =>
           product._id === id ? updatedProduct : product
         ));
+        showAlert("Product updated successfully!", 2000);
       })
       .catch((error) => {
         console.error("Error updating product:", error.response?.data || error);
@@ -60,6 +77,13 @@ function App() {
 
   return (
     <div className="container mt-5">
+
+{alert && (
+        <div className="alert alert-success position-fixed top-0 start-50 translate-middle-x">
+          {alert}
+        </div>
+      )}
+
       <h1 className="text-primary">Vending Machine Tracker</h1>
       <AddProductForm onAdd={handleAddProduct} />
       <div className="row mt-4">
