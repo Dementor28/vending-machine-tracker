@@ -37,6 +37,27 @@ function App() {
       .catch(error => console.error('Error buying product:', error));
   };
 
+  const handleUpdateProduct = (id, updatedData) => {
+    console.log("Updating product with ID:", id); // Debugging line
+    axios
+      .put(`http://localhost:5000/api/products/${id}`, updatedData)
+      .then((response) => {
+        const updatedProduct = response.data;
+        
+        if (!updatedProduct.price || isNaN(updatedProduct.price)) {
+          console.error("Invalid price received:", updatedProduct.price);
+          return;
+        }
+  
+        setProducts(products.map((product) =>
+          product._id === id ? updatedProduct : product
+        ));
+      })
+      .catch((error) => {
+        console.error("Error updating product:", error.response?.data || error);
+      });
+  };
+
   return (
     <div className="container mt-5">
       <h1 className="text-primary">Vending Machine Tracker</h1>
@@ -48,6 +69,7 @@ function App() {
             product={product}
             onDelete={handleDelete}
             onBuy={handleBuyProduct}
+            onUpdate={handleUpdateProduct}
           />
         ))}
       </div>
